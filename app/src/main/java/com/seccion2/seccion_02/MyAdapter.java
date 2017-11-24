@@ -44,12 +44,23 @@ public class MyAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
 
-        // Copiamos la vista
-        View v = convertView;
+        // View Holder Pattern
+        // Para mejorar el desempeño de la app
+        ViewHolder holder;
 
-        // Inflamos la vista que nos ha llegado con el layout personalizado
-        LayoutInflater layoutInflater = LayoutInflater.from(this.context);
-        v = layoutInflater.inflate(R.layout.list_item, null);
+        if (convertView == null) {
+            // Inflamos la vista que nos ha llegado con el layout personalizado
+            LayoutInflater layoutInflater = LayoutInflater.from(this.context);
+            convertView = layoutInflater.inflate(this.layout, null);
+
+            holder = new ViewHolder();
+
+            // Referenciamos el evento a modificar y lo rellenamos
+            holder.nameTextView = (TextView) convertView.findViewById(R.id.textView2);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
 
         // Obtener el
         String currentName = names.get(position);
@@ -57,11 +68,16 @@ public class MyAdapter extends BaseAdapter {
         // currentName = (String) getItem(position);
 
         // Referenciamos el evento a modificar y lo rellenamos
-        TextView textView = (TextView) v.findViewById(R.id.textView2);
-        textView.setText(currentName);
+        holder.nameTextView.setText(currentName);
 
         // Devolvemos la vista inflada y modificada con nuestros datos
-        return v;
+        return convertView;
 
     }
+
+    static class ViewHolder {
+        private TextView nameTextView;
+
+    }
+
 }
