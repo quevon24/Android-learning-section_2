@@ -2,6 +2,7 @@ package com.seccion2.seccion_02;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,11 +47,14 @@ public class GridActivity extends AppCompatActivity {
         myAdapter = new MyAdapter(this, R.layout.grid_item, names);
         gridView.setAdapter(myAdapter);
 
+        // Registrar context menu
+        registerForContextMenu(gridView);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Agregar elemento al action bar
+        // Inflamos el layout del menu del opciones
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_bar_menu, menu);
         return true;
@@ -58,7 +62,7 @@ public class GridActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        // Manejamos eventos click en el menu de opciones
         switch (item.getItemId()) {
             case R.id.add_item:
                 // Añadir nuevo nombre
@@ -71,5 +75,37 @@ public class GridActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    // Inflamos layout del context menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.setHeaderTitle(this.names.get(info.position));
+        inflater.inflate(R.menu.context_menu, menu);
+
+    }
+
+    // Manejamos eventos click en el context menu
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        // Trae la informacion de donde se ha hecho click
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        switch (item.getItemId()) {
+            case R.id.delete_item:
+                // Borramos item clickeado
+                this.names.remove(info.position);
+                // Informar al adaptador de que se ha producido un cambio
+                this.myAdapter.notifyDataSetChanged();
+                // refrescar adaptador
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 }
